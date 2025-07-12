@@ -1,7 +1,15 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 import pandas as pd
+
+
+@dataclass
+class StockHistorySample:
+
+    price: float
+    close_datetime: datetime
 
 
 class StockHistory:
@@ -13,11 +21,11 @@ class StockHistory:
     ):
         self._window = window
 
+        if self._window is not None and needs_preparation:
+            self._post_init_preparation()
+
         if self._window is None:
             self._window = pd.DataFrame()
-
-        if self._window is None and needs_preparation:
-            self._post_init_preparation()
 
     def _post_init_preparation(self):
         raise NotImplementedError()
@@ -29,6 +37,13 @@ class StockHistory:
         self._window = pd.concat([self.get_window(), stock_history.get_window()], axis=0)
         return self
 
-    def gt(self, timestamp: datetime) -> 'StockHistory':
+    def gt(self, start_datetime: datetime) -> 'StockHistory':
         """Filter data gt to timestamp."""
+        raise NotImplementedError()
+
+    def get_start_price(self) -> float:
+        """Returns the start price of the stock."""
+        raise NotImplementedError()
+
+    def pop_row(self) -> StockHistorySample:
         raise NotImplementedError()

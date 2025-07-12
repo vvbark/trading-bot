@@ -7,7 +7,7 @@ from src.training.enums import Timestamp, Currency
 class DataExtractionConfig:
 
     CURRENCY = Currency.BTCUSDT
-    TIMESTAMP = Timestamp.timestamp_3m
+    TIMESTAMP = Timestamp.timestamp_1m
     START_DATE = datetime(2025, 7, 1)
     END_DATE = datetime(2025, 7, 10)
 
