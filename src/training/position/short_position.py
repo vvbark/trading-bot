@@ -1,26 +1,8 @@
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from src.stock_history.stock_history import StockHistory
-
-@dataclass
-class ShortPositionParameters:
-
-    leverage: int = 2
-    quote_qty: float = 200  # QUOTE CURRENCY (USDT)
-    max_duration: timedelta = timedelta(hours=2)
-    stop_loss: float = 10  # QUOTE CURRENCY (USDT)
-    take_profit: float = 10  # QUOTE CURRENCY (USDT)
-
-    def __post_init__(self):
-        self.stop_loss = abs(self.stop_loss)  # only positive
-
-
-@dataclass
-class ShortPositionResult:
-
-    pnl: float
-    duration: timedelta
+from src.training.position.parameters import ShortPositionParameters
+from src.training.position.results import ShortPositionResult
 
 
 class ShortPosition:
@@ -46,6 +28,9 @@ class ShortPosition:
         self._duration = timedelta()
         self._pnl = 0
 
+        self._pnl_logging = []
+        self._close_datetime_logging = []
+
         self._is_estimated = False
 
     def estimate(self):
@@ -60,8 +45,10 @@ class ShortPosition:
 
             stock_history_sample = self._klines_history.pop_row()
             self._duration = stock_history_sample.close_datetime - self._start_datetime
-
             self._pnl = (self._entry_price - stock_history_sample.price) * self._qty
+
+            self._pnl_logging.append(self._pnl)
+            self._close_datetime_logging.append(stock_history_sample.close_datetime)
 
             if abs(self._pnl) > self._short_position_parameters.stop_loss:
                 break
@@ -70,6 +57,13 @@ class ShortPosition:
                 break
 
         self._is_estimated = True
+        del self._klines_history  # clear data
+
+    def get_pnl_logging(self) -> list[float]:
+        return self._pnl_logging
+
+    def get_close_datetime_logging(self) -> list[datetime]:
+        return self._close_datetime_logging
 
     def get_result(self) -> ShortPositionResult:
         if not self._is_estimated:
