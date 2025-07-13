@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date
 
 from src.training.enums import Timestamp, Currency
 
@@ -8,8 +8,8 @@ class DataExtractionConfig:
 
     CURRENCY = Currency.BTCUSDT
     TIMESTAMP = Timestamp.timestamp_1m
-    START_DATE = datetime(2025, 7, 1)
-    END_DATE = datetime(2025, 7, 10)
+    START_DATE = date(2025, 1, 1)
+    END_DATE = date(2025, 7, 13)
 
-    START_DATE_READ = datetime(2025, 7, 2)
-    END_DATE_READ = datetime(2025, 7, 9)
+    START_DATE_READ = date(2025, 1, 1)
+    END_DATE_READ = date(2025, 7, 2)
