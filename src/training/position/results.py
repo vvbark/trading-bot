@@ -4,7 +4,7 @@ from datetime import timedelta, datetime
 from src.training.position.parameters import ShortPositionParameters
 
 
-@dataclass
+@dataclass(frozen=True)
 class ShortPositionResult:
 
     pnl: float
@@ -14,4 +14,6 @@ class ShortPositionResult:
     margin: float
     roi: float
     entry_price: float
+    buying_commission: float
+    selling_commission: float
     input_parameters: ShortPositionParameters

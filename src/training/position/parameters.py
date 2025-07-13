@@ -10,6 +10,7 @@ class ShortPositionParameters:
     qty: float = 0.02
     # quote_qty: float = 200 # QUOTE CURRENCY (USDT)
     max_duration: timedelta = timedelta(hours=2)
+    commission: float = 0.0004  # For purchasing and for selling
     stop_loss_pnl: Optional[float] = None  # QUOTE CURRENCY (USDT)
     take_profit_pnl: Optional[float] = None  # QUOTE CURRENCY (USDT)
     stop_loss_roi: Optional[float] = None

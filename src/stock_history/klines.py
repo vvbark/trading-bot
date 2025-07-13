@@ -22,6 +22,10 @@ class KLinesStockHistory(StockHistory):
 
         return KLinesStockHistory(window, needs_preparation=False)
 
+    def concat(self, stock_history: StockHistory) -> StockHistory:
+        window = pd.concat([self.get_window(), stock_history.get_window()], axis=0)
+        return KLinesStockHistory(window)
+
     def get_start_price(self) -> float:
         return self._window['close'].iloc[0]
 
@@ -29,6 +33,9 @@ class KLinesStockHistory(StockHistory):
 
         row = self._window.iloc[0]
         self._window = self._window.iloc[1:]
+
+        if self._window.shape[0] == 0:
+            raise Exception('No more stock data.')
 
         return StockHistorySample(
             price=row['close'],

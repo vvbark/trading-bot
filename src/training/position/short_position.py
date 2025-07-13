@@ -27,7 +27,14 @@ class ShortPosition:
         self._duration = timedelta()
         self._pnl = 0
 
+        self._selling_commission = 0
+        self._buying_commission = 0
+
         self._is_estimated = False
+
+    def _update_commission(self, selling_price: float, final_price: float):
+        self._selling_commission = selling_price * self._parameters.qty * self._parameters.commission
+        self._buying_commission = final_price * self._parameters.qty * self._parameters.commission
 
     def estimate(self):
         """Calculate short position result.
@@ -37,19 +44,23 @@ class ShortPosition:
         if self._is_estimated:
             raise Exception('Position is already closed.')
 
+        stock_history_sample = self._klines_history.pop_row()
         while self._duration < self._parameters.max_duration:
 
-            stock_history_sample = self._klines_history.pop_row()
             self._duration = stock_history_sample.close_datetime - self._start_datetime
             self._pnl = (self._entry_price - stock_history_sample.price) * self._parameters.qty
 
             self.pnl_logging.append(self._pnl)
             self.close_datetime_logging.append(stock_history_sample.close_datetime)
 
+            stock_history_sample = self._klines_history.pop_row()
+
             if self._check_stop():
                 break
 
+        self._update_commission(self._entry_price, stock_history_sample.price)
         self._is_estimated = True
+
         del self._klines_history  # clear data
 
     def _check_stop(self) -> bool:
@@ -85,12 +96,14 @@ class ShortPosition:
             raise Exception('Position is not estimated.')
 
         return ShortPositionResult(
-            pnl=self._pnl,
+            pnl=self._pnl,  # without commission
             duration=self._duration,
             start_datetime=self._start_datetime,
             target=self._calculate_target(),
             margin=self._margin,
             roi=self._pnl / self._margin,
             entry_price=self._entry_price,
+            buying_commission=self._buying_commission,
+            selling_commission=self._selling_commission,
             input_parameters=self._parameters,
         )
