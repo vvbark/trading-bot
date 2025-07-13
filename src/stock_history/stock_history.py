@@ -34,8 +34,8 @@ class StockHistory:
         return self._window
 
     def concat(self, stock_history: 'StockHistory') -> 'StockHistory':
-        self._window = pd.concat([self.get_window(), stock_history.get_window()], axis=0)
-        return self
+        window = pd.concat([self.get_window(), stock_history.get_window()], axis=0)
+        return StockHistory(window)
 
     def gt(self, start_datetime: datetime) -> 'StockHistory':
         """Filter data gt to timestamp."""
