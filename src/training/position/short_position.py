@@ -72,25 +72,5 @@ class ShortPosition:
         return ShortPositionResult(
             pnl=self._pnl,
             duration=self._duration,
-        )
-
-
-class ShortPositionFabric:
-
-    def __init__(
-        self,
-        short_position_parameters: ShortPositionParameters,
-        klines_history: StockHistory,
-    ):
-        self._short_position_parameters = short_position_parameters
-        self._klines_history = klines_history
-
-    def open(self, start_datetime: datetime) -> ShortPosition:
-
-        klines_history = self._klines_history.gt(start_datetime)
-
-        return ShortPosition(
-            short_position_parameters=self._short_position_parameters,
-            start_datetime=start_datetime,
-            klines_history=klines_history,
+            input_parameters=self._short_position_parameters,
         )
